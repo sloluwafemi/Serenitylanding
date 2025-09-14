@@ -37,7 +37,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: data?.error || "Sheet write failed" }, { status: 502 });
     }
 
-    // --- Send confirmation email (non-blocking) ---
+    // --- Send emails (non-blocking) ---
     try {
       const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
@@ -52,6 +52,7 @@ export async function POST(req: Request) {
       const from = process.env.EMAIL_FROM || process.env.SMTP_USER!;
       const to = (lead.email || "").trim();
 
+      // 1) Confirmation email to the lead
       if (to) {
         await transporter.sendMail({
           from,
@@ -72,8 +73,49 @@ https://www.serenityspang.com/`,
 <a href="https://www.serenityspang.com/">serenityspang.com</a></p>`,
         });
       }
+
+      // 2) Notification email to your team
+      const notifyList =
+        (process.env.NOTIFY_TO || "")
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+
+      if (notifyList.length) {
+        const submittedAt = new Date().toLocaleString();
+        await transporter.sendMail({
+          from,
+          to: notifyList,               // supports multiple recipients
+          replyTo: to || undefined,     // reply goes to the lead
+          subject: "🔥 New Serenity Med Spa Lead",
+          text: `New lead submitted:
+
+Name:    ${lead.name}
+Email:   ${lead.email}
+Phone:   ${lead.phone}
+Concern: ${answers?.concern || "-"}
+Service: ${answers?.service || "-"}
+Timeline:${answers?.timeline || "-"}
+Heard:   ${answers?.heardFrom || "-"}
+
+Submitted: ${submittedAt}
+Page:      ${process.env.SITE_URL || ""}
+`,
+          html: `<h3>New lead submitted</h3>
+<p><b>Name:</b> ${lead.name}<br/>
+<b>Email:</b> ${lead.email}<br/>
+<b>Phone:</b> ${lead.phone}<br/>
+<b>Concern:</b> ${answers?.concern || "-"}<br/>
+<b>Service:</b> ${answers?.service || "-"}<br/>
+<b>Timeline:</b> ${answers?.timeline || "-"}<br/>
+<b>Heard:</b> ${answers?.heardFrom || "-"}</p>
+<p><b>Submitted:</b> ${submittedAt}<br/>
+<b>Page:</b> ${process.env.SITE_URL || ""}</p>
+<p>Reply to this email to contact the lead directly.</p>`,
+        });
+      }
     } catch (emailErr) {
-      // Don't fail the request if email has an issue
+      // Do not fail the request if email sending has an issue
       // console.warn("Email send failed (non-fatal):", emailErr);
     }
 
