@@ -22,9 +22,9 @@ const CONFIG = {
     accent: "#D4AF37",
   },
   offer: {
-    headline: "Refresh Your Glow: Get 10% Off Your First Treatment!",
-    sub: "Answer 3 quick questions to claim your discount and personalize your spa experience.",
-    cta: "Reveal My Offer",
+    headline: "Clearer, Brighter, Younger Skin — Your First Treatment is 15% Off",
+    sub: "Take a 30-second quiz to unlock your personalized offer and treatment plan",
+    cta: "Find My Best Treatment",
     thankYouTitle: "Check your email!",
     thankYouBody: "Discount details have been sent.",
   },
@@ -248,15 +248,15 @@ export default function SerenityConversationalLanding() {
                 <CardContent className="space-y-3 text-sm text-muted-foreground">
                   <div className="flex gap-2 items-start">
                     <MessageCircle className="h-4 w-4 mt-0.5" />
-                    <span>Answer 3 quick questions in a friendly chat-style flow.</span>
+                    <span>Tell us about your skin in just 3 quick taps.</span>
                   </div>
                   <div className="flex gap-2 items-start">
                     <User className="h-4 w-4 mt-0.5" />
-                    <span>Share your details so our concierge can reach you.</span>
+                    <span>Unlock a personalized treatment match + instant 15% off.</span>
                   </div>
                   <div className="flex gap-2 items-start">
                     <CheckCircle className="h-4 w-4 mt-0.5" />
-                    <span>Receive your 10% Off and get help booking a slot.</span>
+                    <span>Our team will guide you to the perfect appointment.</span>
                   </div>
                 </CardContent>
               </Card>
